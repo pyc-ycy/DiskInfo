@@ -1,0 +1,29 @@
+﻿// DeskInfo.idl: DeskInfo.exe 的类型库源
+
+// 此文件将由 MIDL 编译器处理以产生
+// 类型库(DeskInfo.tlb)。
+
+[ uuid(d84f2b98-3149-4457-a0f7-213b5e825008), version(1.0) ]
+library DeskInfo
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	//  CDeskInfoDoc 的主调度接口
+
+	[ uuid(ad5d62fa-d938-4cd9-87e5-05d8ee5ffafe) ]
+	dispinterface IDeskInfo
+	{
+		properties:
+
+		methods:
+	};
+
+	//  CDeskInfoDoc 的类信息
+
+	[ uuid(35e4f1a6-343a-44d0-9876-35ea4e2a70dc) ]
+	coclass DeskInfo
+	{
+		[default] dispinterface IDeskInfo;
+	};
+};
