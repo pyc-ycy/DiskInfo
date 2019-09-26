@@ -85,6 +85,8 @@ BEGIN_MESSAGE_MAP(CDeskInfoDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_GETVOL, &CDeskInfoDlg::OnButtonGetvol)
 	ON_BN_CLICKED(IDC_BUTTON_GETSERAL, &CDeskInfoDlg::OnButtonGetseral)
 	ON_BN_CLICKED(IDC_BUTTON_CHECK_A, &CDeskInfoDlg::OnButtonCheckA)
+	ON_BN_CLICKED(IDC_BUTTON_CHECKCDROM, &CDeskInfoDlg::OnButtonCheckcdrom)
+	ON_BN_CLICKED(IDC_BUTTON_GETMEDIATYPE, &CDeskInfoDlg::OnButtonGetmediatype)
 END_MESSAGE_MAP()
 
 
@@ -329,4 +331,63 @@ void CDeskInfoDlg::HandleDeviceChange(UINT message, WPARAM wParam, LPARAM lParam
 		break;
 	}
 	
+}
+
+void CDeskInfoDlg::OnButtonCheckcdrom()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	DWORD dwReturn;		// 定义返回值变量
+	char strDrivers[MAX_PATH];		// 定义驱动器数组
+	dwReturn = GetLogicalDriveStrings(MAX_PATH, (LPSTR)&strDrivers);	// 获取本地驱动器字符串
+	CString log;	// 定义日志信息变量
+	for (int i = 0; i < dwReturn; i++)
+	{
+		// 如果驱动器盘符有效
+		if ((strDrivers[i] < 'Z') && (strDrivers[i] >= 'A'))
+		{
+			CString driver;
+			driver.Format("%c:\\", strDrivers[i]);
+			UINT type = GetDriveType(driver);
+			if (type == DRIVE_CDROM)
+			{
+				int bResult = GetVolumeInformation(driver, NULL, 0, NULL, NULL, NULL, NULL, 0);
+				CString info;
+				if (bResult == 0)
+					info.Format("光驱%c中没有光盘\r\n", strDrivers[i]);
+				else
+					info.Format("光驱%c中有光盘\r\n", strDrivers[i]);
+				log += info;
+			}
+		}
+	}
+	WriteLog(log);
+}
+
+// 获取驱动器类型
+void CDeskInfoDlg::OnButtonGetmediatype()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	UpdateData(true);
+	CString csType;
+	UINT uiType = GetDriveType(m_DiskName);
+	switch (uiType)
+	{
+	case DRIVE_UNKNOWN:
+		csType = "驱动器类型不确定。"; break;
+	case DRIVE_NO_ROOT_DIR:
+		csType = "指定的根目录不存在。"; break;
+	case DRIVE_REMOVABLE:
+		csType = "可移动的存储器。"; break;
+	case DRIVE_FIXED:
+		csType = "固定的存储器，也就是所谓的磁盘"; break;
+	case DRIVE_REMOTE:
+		csType = "远程驱动器，也称为网络驱动器。"; break;
+	case DRIVE_CDROM:
+		csType = "CD-ROM 驱动器。"; break;
+	case DRIVE_RAMDISK:
+		csType = "内存驱动器，驱动器将内存的一部分划分出来作为硬盘使用。"; break;
+	default:
+		csType = "未知";
+	}
+	WriteLog("驱动器%s的类型返回值=%d(%s)", m_DiskName, uiType, csType);
 }

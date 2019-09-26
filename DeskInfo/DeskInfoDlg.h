@@ -56,4 +56,6 @@ public:
 	CString m_Log;
 	afx_msg void OnButtonGetseral();
 	afx_msg void OnButtonCheckA();
+	afx_msg void OnButtonCheckcdrom();
+	afx_msg void OnButtonGetmediatype();
 };
